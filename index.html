@@ -149,8 +149,8 @@
 
     .col-toggle-btn {
       background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.1);
-      color: #4a6a8a; padding: 5px 12px; border-radius: 6px;
-      font-size: 0.72rem; font-weight: 700; letter-spacing: 0.5px;
+      color: #4a6a8a; padding: 6px 14px; border-radius: 20px;
+      font-size: 0.75rem; font-weight: 700; letter-spacing: 0.5px;
       cursor: pointer; transition: all 0.15s; white-space: nowrap;
     }
     .col-toggle-btn:hover { border-color: #3b5898; color: #8ab0d8; }
@@ -715,10 +715,138 @@
       white-space: nowrap;
     }
     .switch-club-btn:hover { background: rgba(232,121,249,0.1); border-color: var(--mpd); }
+
+    /* ── ROTATE DEVICE OVERLAY ─────────────────── */
+    #rotate-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      z-index: 9999;
+      background: #0a1628;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 20px;
+      text-align: center;
+      padding: 40px 24px;
+    }
+    .rotate-icon {
+      font-size: 3.5rem;
+      animation: rotate-anim 2.2s ease-in-out infinite;
+      display: block;
+      line-height: 1;
+    }
+    @keyframes rotate-anim {
+      0%, 100% { transform: rotate(0deg); }
+      35%       { transform: rotate(-90deg); }
+      65%       { transform: rotate(-90deg); }
+    }
+    .rotate-title {
+      font-size: 1.15rem;
+      font-weight: 800;
+      color: #e8edf5;
+      letter-spacing: 0.4px;
+    }
+    .rotate-sub {
+      font-size: 0.82rem;
+      color: #4a6a8a;
+      max-width: 260px;
+      line-height: 1.6;
+    }
+
+    /* Show overlay in portrait on narrow devices */
+    @media (max-width: 640px) and (orientation: portrait) {
+      #rotate-overlay { display: flex; }
+      body { overflow: hidden; }
+    }
+
+    /* ── MOBILE — general small screen ──────────── */
+    @media (max-width: 767px) {
+      /* Header */
+      header { padding: 0 12px; gap: 8px; height: 44px; }
+      .app-name { font-size: 0.85rem; }
+      .club-name { font-size: 0.7rem; }
+      .season-label { display: none; }
+      .header-divider { display: none; }
+      .built-by { display: none; }
+
+      /* Main layout */
+      main { padding: 18px 10px 40px; }
+
+      /* League toggles */
+      .league-toggles { gap: 6px; margin-bottom: 18px; }
+      .league-toggle-btn { padding: 7px 16px; font-size: 0.73rem; }
+
+      /* Team cards — tighter on mobile */
+      .team-card { padding: 14px 12px; border-radius: 10px; }
+      .team-name { font-size: 0.83rem; margin-bottom: 14px; }
+      .stat-value { font-size: 1.55rem; }
+      .stat-label { font-size: 0.58rem; }
+      .secondary-value { font-size: 0.88rem; }
+      .secondary-label { font-size: 0.54rem; }
+      .stats-row { gap: 8px; margin-bottom: 12px; }
+
+      /* Section header row — stack on mobile */
+      .section-header-row {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+        margin-top: 28px;
+        margin-bottom: 14px;
+      }
+      .header-actions { width: 100%; flex-wrap: wrap; gap: 8px; }
+
+      /* Matrix controls — stack vertically */
+      .matrix-controls { gap: 8px; }
+      .matrix-controls-row { flex-direction: column; align-items: flex-start; gap: 8px; }
+      #matrix-search { width: 100%; font-size: 0.88rem; }
+      .matrix-filter-btns { flex-wrap: wrap; gap: 5px; }
+      .filter-btn { padding: 5px 10px; font-size: 0.68rem; }
+      .col-toggle-btn { font-size: 0.68rem; padding: 5px 10px; }
+
+      /* Legend — hide the long description on mobile */
+      .legend { gap: 10px; margin-bottom: 10px; }
+      .legend-item:last-child { display: none; }
+      .legend-item { font-size: 0.66rem; }
+
+      /* Matrix table — compact cells */
+      table.matrix { font-size: 0.75rem; }
+      .matrix th { padding: 8px 6px; font-size: 0.56rem; letter-spacing: 0.8px; }
+      .matrix th.th-grade { min-width: 56px; }
+      .matrix td { padding: 5px 6px; }
+      .smart-cell { min-height: 36px; gap: 3px; }
+      .cell-count { font-size: 0.9rem; }
+      .progress-dot { width: 5px; height: 5px; }
+      .cell-dots { gap: 2px; }
+      .td-name .mname { font-size: 0.78rem; }
+
+      /* Scroll hint button */
+      .scroll-hint-btn { font-size: 0.72rem; padding: 8px 18px; bottom: 16px; }
+
+      /* Modal */
+      .modal { padding: 18px 16px; width: 96%; border-radius: 10px; }
+      .rules-content { font-size: 0.82rem; max-height: 65vh; }
+    }
+
+    /* ── TABLET — landscape & mid-size ──────────── */
+    @media (min-width: 768px) and (max-width: 1024px) {
+      main { padding: 24px 14px 50px; }
+      .section-header-row { flex-wrap: wrap; gap: 10px; }
+      .header-actions { flex-wrap: wrap; }
+      .matrix-controls-row { flex-wrap: wrap; gap: 10px; }
+      #matrix-search { width: 180px; }
+    }
   </style>
   <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 </head>
 <body>
+
+<!-- ── ROTATE DEVICE OVERLAY ── -->
+<div id="rotate-overlay" aria-hidden="true">
+  <span class="rotate-icon">📱</span>
+  <div class="rotate-title">Rotate your device</div>
+  <div class="rotate-sub">SquadLogic works best in landscape mode on mobile</div>
+</div>
 
 <header>
   <div class="app-name">SquadLogic</div>
@@ -768,6 +896,7 @@
       <div class="header-actions">
         <button id="toggle-simulator" class="sim-toggle">🔮 Simulator</button>
         <button id="reset-simulator" class="btn-simulator-reset" style="display:none;">⟲ Reset</button>
+        <button id="toggle-u19-cols" class="col-toggle-btn active">Youth cols <span class="col-toggle-indicator">visible</span></button>
         <button id="rules-btn" class="rules-btn-new">
           <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
           Eligibility Rules
@@ -793,7 +922,6 @@
           <button class="filter-btn MD3" data-filter="MD3">MD3</button>
           <button class="filter-btn MD5" data-filter="MD5">MD5</button>
         </div>
-        <button id="toggle-u19-cols" class="col-toggle-btn active">U19 / Youth cols <span class="col-toggle-indicator">visible</span></button>
       </div>
     </div>
 
