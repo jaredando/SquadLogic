@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>UNSW-ES Bulldogs | AFL Sydney 2026</title>
+  <title>Squad Logic Dashboard</title>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -500,6 +500,20 @@
       justify-content: center;
       gap: 5px;
       min-height: 48px;
+      position: relative;
+    }
+    .cell-warn-pip {
+      position: absolute;
+      top: 3px; right: 3px;
+      width: 13px; height: 13px;
+      border-radius: 50%;
+      background: #f59e0b;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.5rem; font-weight: 900;
+      color: #0a1628;
+      line-height: 1;
+      cursor: default;
+      z-index: 1;
     }
     .cell-count { font-size: 1.1rem; font-weight: 800; line-height: 1; }
     .count-qualified { color: #10b981; }
@@ -575,6 +589,10 @@
     .pill-early  { background: rgba(100,116,139,0.1);  color: #94a3b8; border-color: rgba(100,116,139,0.25); }
     .pill-safe   { background: rgba(226,232,240,0.07); color: #cbd5e1; border-color: rgba(226,232,240,0.14); }
     .pill-none   { color: #1e3461; font-size: 0.75rem; }
+    .pill-overqualify {
+      font-size: 0.62rem; font-weight: 700; letter-spacing: 0.2px;
+      color: #f59e0b; padding-left: 2px; opacity: 0.9;
+    }
 
     .matrix-loading { padding: 32px; text-align: center; color: #2a4060; font-size: 0.85rem; }
 
@@ -836,6 +854,121 @@
       .matrix-controls-row { flex-wrap: wrap; gap: 10px; }
       #matrix-search { width: 180px; }
     }
+
+    /* ── PER-GRADE COLUMN HIDING ─────────────────── */
+    .matrix.hide-col-MPD   .th-MPD,   .matrix.hide-col-MPD   td[data-grade="MPD"]   { display: none; }
+    .matrix.hide-col-MD1   .th-MD1,   .matrix.hide-col-MD1   td[data-grade="MD1"]   { display: none; }
+    .matrix.hide-col-MD2   .th-MD2,   .matrix.hide-col-MD2   td[data-grade="MD2"]   { display: none; }
+    .matrix.hide-col-MD3   .th-MD3,   .matrix.hide-col-MD3   td[data-grade="MD3"]   { display: none; }
+    .matrix.hide-col-MD4   .th-MD4,   .matrix.hide-col-MD4   td[data-grade="MD4"]   { display: none; }
+    .matrix.hide-col-MD5   .th-MD5,   .matrix.hide-col-MD5   td[data-grade="MD5"]   { display: none; }
+    .matrix.hide-col-MD6   .th-MD6,   .matrix.hide-col-MD6   td[data-grade="MD6"]   { display: none; }
+    .matrix.hide-col-WPD   .th-WPD,   .matrix.hide-col-WPD   td[data-grade="WPD"]   { display: none; }
+    .matrix.hide-col-WD1   .th-WD1,   .matrix.hide-col-WD1   td[data-grade="WD1"]   { display: none; }
+    .matrix.hide-col-WD2   .th-WD2,   .matrix.hide-col-WD2   td[data-grade="WD2"]   { display: none; }
+    .matrix.hide-col-WD3   .th-WD3,   .matrix.hide-col-WD3   td[data-grade="WD3"]   { display: none; }
+    .matrix.hide-col-U19   .th-U19,   .matrix.hide-col-U19   td[data-grade="U19"]   { display: none; }
+    .matrix.hide-col-U19D2 .th-U19D2, .matrix.hide-col-U19D2 td[data-grade="U19D2"] { display: none; }
+    .matrix.hide-col-WU20  .th-WU20,  .matrix.hide-col-WU20  td[data-grade="WU20"]  { display: none; }
+
+    /* ── COLUMN HEADER CLOSE BUTTON ──────────────── */
+    .th-grade { position: relative; }
+    .col-close-btn {
+      position: absolute;
+      top: 4px; right: 4px;
+      width: 15px; height: 15px;
+      display: flex; align-items: center; justify-content: center;
+      background: transparent;
+      border: none;
+      color: transparent;
+      border-radius: 3px;
+      cursor: pointer;
+      font-size: 0.72rem;
+      line-height: 1;
+      padding: 0;
+      transition: background 0.15s, color 0.15s;
+      z-index: 2;
+    }
+    .th-grade:hover .col-close-btn { color: #3a5070; }
+    .col-close-btn:hover { background: rgba(239,68,68,0.25) !important; color: #f87171 !important; }
+
+    /* ── COLUMN SETTINGS PANEL ───────────────────── */
+    .col-settings-wrap { position: relative; }
+    .col-settings-btn {
+      display: flex; align-items: center; gap: 5px;
+      background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.1);
+      color: #4a6a8a; padding: 6px 14px; border-radius: 20px;
+      font-size: 0.75rem; font-weight: 700; letter-spacing: 0.5px;
+      cursor: pointer; transition: all 0.15s; white-space: nowrap;
+    }
+    .col-settings-btn:hover { border-color: #3b5898; color: #8ab0d8; }
+    .col-settings-btn.has-hidden {
+      border-color: rgba(251,191,36,0.45); color: #fbbf24; background: rgba(251,191,36,0.07);
+    }
+    .col-settings-panel {
+      position: absolute;
+      top: calc(100% + 8px); right: 0;
+      background: #0d1e38;
+      border: 1px solid #1e3461;
+      border-radius: 12px;
+      padding: 14px 16px;
+      min-width: 210px;
+      z-index: 400;
+      box-shadow: 0 8px 28px rgba(0,0,0,0.6);
+      display: none;
+    }
+    .col-settings-panel.open {
+      display: block;
+      animation: panel-drop 0.15s ease;
+    }
+    @keyframes panel-drop {
+      from { opacity: 0; transform: translateY(-5px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    .col-settings-head {
+      display: flex; justify-content: space-between; align-items: center;
+      margin-bottom: 10px; padding-bottom: 8px; border-bottom: 1px solid #1e3461;
+    }
+    .col-settings-label {
+      font-size: 0.6rem; text-transform: uppercase; letter-spacing: 1.5px; color: #3a5070; font-weight: 700;
+    }
+    .col-settings-reset {
+      font-size: 0.65rem; font-weight: 700; color: #4a6a8a;
+      background: none; border: none; cursor: pointer;
+      padding: 0; letter-spacing: 0.3px; text-transform: uppercase; transition: color 0.15s;
+    }
+    .col-settings-reset:hover { color: #90aac8; }
+    .col-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+    .col-chip {
+      display: inline-flex; align-items: center;
+      padding: 4px 10px; border-radius: 20px;
+      font-size: 0.68rem; font-weight: 800; letter-spacing: 0.5px;
+      cursor: pointer; border: 1px solid transparent;
+      transition: all 0.15s; white-space: nowrap; user-select: none;
+    }
+    /* Visible state — grade tint */
+    .col-chip.chip-MPD   { background: rgba(232,121,249,0.12); color: var(--mpd); border-color: rgba(232,121,249,0.35); }
+    .col-chip.chip-MD1   { background: rgba(59,130,246,0.12);  color: var(--md1); border-color: rgba(59,130,246,0.35); }
+    .col-chip.chip-MD2   { background: rgba(34,211,238,0.12);  color: var(--md2); border-color: rgba(34,211,238,0.35); }
+    .col-chip.chip-MD3   { background: rgba(52,211,153,0.12);  color: var(--md3); border-color: rgba(52,211,153,0.35); }
+    .col-chip.chip-MD4   { background: rgba(163,230,53,0.12);  color: var(--md4); border-color: rgba(163,230,53,0.35); }
+    .col-chip.chip-MD5   { background: rgba(251,146,60,0.12);  color: var(--md5); border-color: rgba(251,146,60,0.35); }
+    .col-chip.chip-MD6   { background: rgba(248,113,113,0.12); color: var(--md6); border-color: rgba(248,113,113,0.35); }
+    .col-chip.chip-WPD   { background: rgba(244,114,182,0.12); color: var(--wpd); border-color: rgba(244,114,182,0.35); }
+    .col-chip.chip-WD1   { background: rgba(192,132,252,0.12); color: var(--wd1); border-color: rgba(192,132,252,0.35); }
+    .col-chip.chip-WD2   { background: rgba(129,140,248,0.12); color: var(--wd2); border-color: rgba(129,140,248,0.35); }
+    .col-chip.chip-WD3   { background: rgba(167,139,250,0.12); color: var(--wd3); border-color: rgba(167,139,250,0.35); }
+    .col-chip.chip-U19   { background: rgba(56,189,248,0.12);  color: var(--u19);   border-color: rgba(56,189,248,0.35); }
+    .col-chip.chip-U19D2 { background: rgba(103,232,249,0.12); color: var(--u19d2); border-color: rgba(103,232,249,0.35); }
+    .col-chip.chip-WU20  { background: rgba(253,164,175,0.12); color: var(--wu20);  border-color: rgba(253,164,175,0.35); }
+    /* Hidden state */
+    .col-chip.chip-off {
+      background: rgba(255,255,255,0.03) !important;
+      color: #2a3a50 !important;
+      border-color: rgba(255,255,255,0.06) !important;
+      text-decoration: line-through;
+      opacity: 0.6;
+    }
   </style>
   <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 </head>
@@ -896,7 +1029,19 @@
       <div class="header-actions">
         <button id="toggle-simulator" class="sim-toggle">🔮 Simulator</button>
         <button id="reset-simulator" class="btn-simulator-reset" style="display:none;">⟲ Reset</button>
-        <button id="toggle-u19-cols" class="col-toggle-btn active">Youth cols <span class="col-toggle-indicator">visible</span></button>
+        <div class="col-settings-wrap" id="col-settings-wrap">
+          <button id="col-settings-btn" class="col-settings-btn">
+            <svg viewBox="0 0 24 24" width="13" height="13" stroke="currentColor" stroke-width="2.2" fill="none" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+            Columns
+          </button>
+          <div id="col-settings-panel" class="col-settings-panel">
+            <div class="col-settings-head">
+              <span class="col-settings-label">Grade Columns</span>
+              <button class="col-settings-reset" id="col-settings-reset">Reset</button>
+            </div>
+            <div class="col-chips" id="col-chips"></div>
+          </div>
+        </div>
         <button id="rules-btn" class="rules-btn-new">
           <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
           Eligibility Rules
@@ -1400,7 +1545,13 @@
     const dots = dotsHtml(p, evalGrade.shortName, effectiveSimApps);
     const toGo = 6 - qualifyingCount;
 
-    if (qualifyingCount >= 6) return `<div class="spill-wrap"><span class="status-pill pill-safe">✓ QUALIFIED ${label}</span>${dots}</div>`;
+    if (qualifyingCount >= 6) {
+      const warnGrades = !isTargeting ? dashboard.filter(d => d.state === 'warn').map(d => d.shortName) : [];
+      const warnTag = warnGrades.length > 0
+        ? `<span class="pill-overqualify">⚠ ${warnGrades.join(' · ')} at risk of lockout</span>`
+        : '';
+      return `<div class="spill-wrap"><span class="status-pill pill-safe">✓ QUALIFIED ${label}</span>${warnTag}${dots}</div>`;
+    }
     if (toGo <= 2) return `<div class="spill-wrap"><span class="status-pill pill-target">${toGo} MORE FOR ${label}</span>${dots}</div>`;
     return `<div class="spill-wrap"><span class="status-pill pill-early">${toGo} MORE FOR ${label}</span>${dots}</div>`;
   }
@@ -1459,6 +1610,9 @@
       return `<div class="smart-cell capped-cell">🔒</div>`;
     }
 
+    // nearCap: one more higher-grade game permanently locks this player from THIS grade
+    const nearCap = gradeRank > 0 && higherGames === 6;
+
     const rawInGrade = currentByGrade[grade] || 0;
 
     // Ghosting: find the highest rank where player has games
@@ -1468,8 +1622,19 @@
     }
     // Show only: cells with raw games, OR the immediate next target grade (one step above active)
     if (rawInGrade === 0 && gradeRank !== highestActiveRank - 1) {
+      if (nearCap) {
+        // Can't put pip inside ghost-cell — opacity:0.1 is inherited and can't be overridden by children
+        return `<div class="smart-cell">
+          <span class="cell-warn-pip" title="⚠ One more higher-grade game permanently locks this player out of ${grade}!">!</span>
+          <div class="cell-count count-empty" style="opacity:0.18">—</div>
+        </div>`;
+      }
       return `<div class="smart-cell ghost-cell">—</div>`;
     }
+
+    const warnPip = nearCap
+      ? `<span class="cell-warn-pip" title="⚠ One more higher-grade game permanently locks this player out of ${grade}!">!</span>`
+      : '';
 
     // Color by raw games in this grade (no cross-grade double-counting)
     const countClass = rawInGrade >= 6 ? 'count-qualified' : rawInGrade >= 4 ? 'count-close' : rawInGrade > 0 ? 'count-playing' : 'count-empty';
@@ -1478,6 +1643,7 @@
       const simVal = p.sim[grade] || 0;
       const isSim = simVal !== 0;
       return `<div class="smart-cell">
+        ${warnPip}
         <div class="sim-cell">
           <button class="sim-btn" data-action="minus" data-id="${p.id}" data-grade="${grade}">-</button>
           <span class="sim-val ${isSim ? 'simulated' : ''} ${countClass}">${rawInGrade}</span>
@@ -1487,6 +1653,7 @@
     }
 
     return `<div class="smart-cell">
+      ${warnPip}
       <div class="cell-count ${countClass}">${rawInGrade || '—'}</div>
     </div>`;
   }
@@ -1533,16 +1700,17 @@
       let rulesApplied = 0;
       if (p.lostToWeekendRule > 0) {
         rulesApplied++;
-        ruleTooltip += `ℹ️ WEEKEND RULE APPLIED:&#10;${p.lostToWeekendRule} lower-grade match(es) discarded (played higher grade same weekend).`;
+        ruleTooltip += `📅 DOUBLE UP RULE:&#10;${p.lostToWeekendRule}× — played 2 games in 1 weekend, only the higher-grade game counts each time.`;
       }
       if (simDiscounted > 0) {
         rulesApplied++;
         if (ruleTooltip) ruleTooltip += `&#10;&#10;`;
-        ruleTooltip += `🔮 SIMULATOR: ${simDiscounted} simulated match(es) discarded due to weekend rule.`;
+        ruleTooltip += `🔮 SIMULATOR: ${simDiscounted}× — simulated games discarded, 2 games in 1 weekend, only higher-grade counts.`;
       }
 
+      const doubleUpCount = p.lostToWeekendRule + simDiscounted;
       const crossTag = p.crossGrade ? '<span class="cross-tag">↕ CROSS</span>' : '';
-      const ruleTag = rulesApplied > 0 ? `<span class="rule-tag" title="${ruleTooltip}">${rulesApplied} × RULE${rulesApplied > 1 ? 'S' : ''}</span>` : '';
+      const ruleTag = doubleUpCount > 0 ? `<span class="rule-tag" title="${ruleTooltip}">${doubleUpCount} × DoubleUp</span>` : '';
 
       return `<tr class="${p.crossGrade ? 'row-cross' : ''}" data-name="${p.name.toLowerCase()}">
         <td class="td-name" title="${nameTooltip}"><span class="mname">${p.name}</span>${crossTag}${ruleTag}</td>
@@ -1551,14 +1719,6 @@
       </tr>`;
     }).join('');
 
-    // Re-apply youth column visibility after re-render
-    const u19Btn = document.getElementById('toggle-u19-cols');
-    if (u19Btn && !u19Btn.classList.contains('active')) {
-      const YOUTH = ['U19', 'U19D2', 'WU20'];
-      document.querySelectorAll('.matrix td[data-grade]').forEach(cell => {
-        if (YOUTH.includes(cell.dataset.grade)) cell.classList.add('col-u19-hidden');
-      });
-    }
   }
 
   // ── SEARCH & FILTER ───────────────────────────────
@@ -1637,6 +1797,29 @@
     }
 
     renderMatrix(rows);
+  }
+
+  // ── COLUMN VISIBILITY ────────────────────────────
+  const hiddenCols = new Set();
+
+  function applyColVisibility() {
+    const table = document.querySelector('table.matrix');
+    if (!table) return;
+    [...table.classList].filter(c => c.startsWith('hide-col-')).forEach(c => table.classList.remove(c));
+    hiddenCols.forEach(g => table.classList.add('hide-col-' + g));
+    const btn = document.getElementById('col-settings-btn');
+    if (btn) btn.classList.toggle('has-hidden', hiddenCols.size > 0);
+    document.querySelectorAll('.col-chip').forEach(chip => {
+      chip.classList.toggle('chip-off', hiddenCols.has(chip.dataset.grade));
+    });
+  }
+
+  function buildColChips() {
+    const container = document.getElementById('col-chips');
+    if (!container) return;
+    container.innerHTML = activeTeams.map(t =>
+      `<button class="col-chip chip-${t.shortName}${hiddenCols.has(t.shortName) ? ' chip-off' : ''}" data-grade="${t.shortName}">${t.shortName}</button>`
+    ).join('');
   }
 
   let controlsSetup = false;
@@ -1723,8 +1906,15 @@
       applyFilters(); // Re-renders table smoothly
     });
 
-    // Column sort
+    // Column sort + column close button (delegated from section)
     document.getElementById('matrix-section').addEventListener('click', e => {
+      const closeBtn = e.target.closest('.col-close-btn');
+      if (closeBtn) {
+        e.stopPropagation();
+        hiddenCols.add(closeBtn.dataset.grade);
+        applyColVisibility();
+        return;
+      }
       const th = e.target.closest('.th-grade[data-sort]');
       if (!th) return;
       const grade = th.dataset.sort;
@@ -1739,17 +1929,34 @@
       applyFilters();
     });
 
-    // U19 / Youth column visibility toggle
-    let u19ColsVisible = true;
-    const YOUTH_GRADES = ['U19', 'U19D2', 'WU20'];
-    document.getElementById('toggle-u19-cols').addEventListener('click', function() {
-      u19ColsVisible = !u19ColsVisible;
-      this.classList.toggle('active', u19ColsVisible);
-      this.querySelector('.col-toggle-indicator').textContent = u19ColsVisible ? 'visible' : 'hidden';
-      document.querySelectorAll('.matrix th, .matrix td').forEach(cell => {
-        const grade = cell.dataset.sort || cell.dataset.grade;
-        if (grade && YOUTH_GRADES.includes(grade)) cell.classList.toggle('col-u19-hidden', !u19ColsVisible);
-      });
+    // ⚙ Column settings panel
+    const colSettingsBtn = document.getElementById('col-settings-btn');
+    const colSettingsPanel = document.getElementById('col-settings-panel');
+
+    colSettingsBtn.addEventListener('click', e => {
+      e.stopPropagation();
+      colSettingsPanel.classList.toggle('open');
+    });
+
+    document.getElementById('col-chips').addEventListener('click', e => {
+      const chip = e.target.closest('.col-chip');
+      if (!chip) return;
+      const grade = chip.dataset.grade;
+      if (hiddenCols.has(grade)) hiddenCols.delete(grade);
+      else hiddenCols.add(grade);
+      applyColVisibility();
+    });
+
+    document.getElementById('col-settings-reset').addEventListener('click', () => {
+      const isWomens = activeTeams === WOMENS_TEAMS;
+      hiddenCols.clear();
+      if (!isWomens) ['U19', 'U19D2'].filter(g => activeTeams.some(t => t.shortName === g)).forEach(g => hiddenCols.add(g));
+      applyColVisibility();
+    });
+
+    document.addEventListener('click', e => {
+      const wrap = document.getElementById('col-settings-wrap');
+      if (wrap && !wrap.contains(e.target)) colSettingsPanel.classList.remove('open');
     });
 
     // Modal controls
@@ -1820,7 +2027,10 @@
 
     document.getElementById('matrix-thead').innerHTML = `<tr>
       <th>Player</th>
-      ${activeTeams.map(t => `<th class="th-grade th-${t.shortName} ${t.shortName==='U19' ? 'u19-col' : ''}" data-sort="${t.shortName}" title="Sort by ${t.shortName} games"><div class="th-grade-inner"><span class="th-grade-name">${t.shortName}</span><span class="th-grade-sub">Games</span></div></th>`).join('')}
+      ${activeTeams.map(t => `<th class="th-grade th-${t.shortName}" data-sort="${t.shortName}" title="Sort by ${t.shortName} games">
+        <button class="col-close-btn" data-grade="${t.shortName}" title="Hide ${t.shortName}">×</button>
+        <div class="th-grade-inner"><span class="th-grade-name">${t.shortName}</span><span class="th-grade-sub">Games</span></div>
+      </th>`).join('')}
       <th class="th-status">
         <div class="th-status-inner">
           <span>Qualification Status</span>
@@ -1831,13 +2041,19 @@
         </div>
       </th>
     </tr>`;
-    
+
     document.getElementById('status-filter-select').addEventListener('change', e => {
       statusTargetFilter = e.target.value;
       applyFilters();
     });
 
     setupControls();
+
+    // Set default column visibility: hide youth for men's, show all for women's
+    hiddenCols.clear();
+    if (!isWomens) ['U19', 'U19D2'].filter(g => activeTeams.some(t => t.shortName === g)).forEach(g => hiddenCols.add(g));
+    buildColChips();
+    applyColVisibility();
 
     activeTeams.forEach(team => grid.appendChild(createCard(team)));
 
