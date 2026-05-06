@@ -1140,9 +1140,16 @@
     U19D2: { id: 'f8ed0b14', name: "Men's Under 19.5 Div 2" },
     WU20:  { id: 'ed1d59a2', name: "Women's Under 20's" }
   };
+
+  const GRADE_ORDER = {
+    'MPD': 0, 'U19': 1, 'MD1': 2, 'MD2': 3, 'MD3': 4, 'MD4': 5, 'U19D2': 6, 'MD5': 7, 'MD6': 8,
+    'WPD': 0, 'WU20': 1, 'WD1': 2, 'WD2': 3, 'WD3': 4
+  };
   
   function buildTeams(arr) {
-    return arr.map(t => ({ shortName: t[0], teamId: t[1], gradeId: GRADES[t[0]].id, gradeName: GRADES[t[0]].name }));
+    return arr
+      .sort((a, b) => GRADE_ORDER[a[0]] - GRADE_ORDER[b[0]])
+      .map(t => ({ shortName: t[0], teamId: t[1], gradeId: GRADES[t[0]].id, gradeName: GRADES[t[0]].name }));
   }
 
   const CLUBS = {
@@ -2033,6 +2040,8 @@
     sortColumn = null;
 
     GRADE_RANK = {};
+    // activeTeams is pre-sorted from highest grade to lowest.
+    // This assigns lower integers to higher grades (e.g. MPD = 0), so `rank >= target` correctly targets lower grades.
     activeTeams.forEach((t, i) => GRADE_RANK[t.shortName] = i);
 
     document.getElementById('matrix-filters').innerHTML = `
